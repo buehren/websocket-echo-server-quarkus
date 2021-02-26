@@ -1,0 +1,76 @@
+= Websocket Echo Server in Quarkus
+:toc:
+:toclevels: 10
+
+1. Start the <<server,Server>> (see below for multiple options).
+2. Connect with a <<client,Client>> (in another shell).
+
+== Server [[server]]
+
+=== Run on localhost in Quarkus Dev Mode
+
+Java 11 required.
+
+[source%nowrap,bash]
+----
+./mvnw compile quarkus:dev
+----
+
+=== Run on localhost in Docker
+
+A lot of disk space, RAM (~4 GB) for building native executable.
+
+[source%nowrap,bash]
+----
+docker build -f Dockerfile -t websocket-echo-server-quarkus .
+
+docker run -i --rm -p 8080:8080 websocket-echo-server-quarkus
+----
+
+=== Run on Google Cloud Run
+
+image:https://deploy.cloud.run/button.svg[Run on Google Cloud,link=https://deploy.cloud.run]
+
+
+== Client [[client]]
+
+=== Install Python WebSocket Client
+
+Python `pip` required to install https://pypi.org/project/websocket_client/[websocket_client ].
+
+[source%nowrap,bash]
+----
+pip install websocket-client
+----
+
+=== Connect with Python WebSocket Client
+
+[source%nowrap,bash]
+----
+wsdump.py ws://127.0.0.1:8080/websocket
+# Now enter texts and press RETURN.
+# The texts are echoed by the server.
+----
+
+
+== Re-create this project
+
+Java 11 and Maven required.
+
+[source%nowrap,bash]
+----
+mvn io.quarkus:quarkus-maven-plugin:1.12.0.Final:create \
+-DprojectGroupId=org.acme \
+-DprojectArtifactId=websocket-echo-server-quarkus \
+-Dextensions="undertow-websockets" \
+-DnoExamples
+
+cd websocket-echo-server-quarkus
+rm .dockerignore
+
+# Add these files:
+# Dockerfile
+# src/main/java/org/acme/WebSocketEndpoint.java
+# src/main/resources/application.properties
+
+----
